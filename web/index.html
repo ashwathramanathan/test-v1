@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrustCheck — Internship & Certificate Scam Verification</title>
+  <meta name="description" content="Verify whether internship offers, recruiters, and certificates are legitimate or fraudulent before you trust.">
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --text-main: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --black: #0f172a;
+      --black-hover: #1e293b;
+      
+      --status-verified-text: #166534;
+      --status-verified-bg: #f0fdf4;
+      --status-verified-border: #bbf7d0;
+      
+      --status-suspicious-text: #991b1b;
+      --status-suspicious-bg: #fef2f2;
+      --status-suspicious-border: #fecaca;
+      
+      --status-unverified-text: #92400e;
+      --status-unverified-bg: #fffbeb;
+      --status-unverified-border: #fde68a;
+
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top Navigation */
+    .navbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 24px;
+    }
+
+    .navbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--black);
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--black);
+      color: #ffffff;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .nav-btn:hover {
+      color: var(--black);
+      background: #f1f5f9;
+    }
+
+    .nav-btn.active {
+      color: var(--black);
+      background: #f1f5f9;
+      font-weight: 600;
+      border-color: var(--border);
+    }
+
+    .nav-right-status {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    /* Main Container */
+    .main-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 60px 24px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--black);
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 660px;
+      margin: 0 auto;
+    }
+
+    /* Verification Form & Layout */
+    .verify-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .verify-grid {
+        grid-template-columns: 1fr;
+      }
+      .navbar-inner {
+        flex-direction: column;
+        height: auto;
+        padding: 12px 0;
+        gap: 12px;
+      }
+      .nav-links {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+
+    .form-label span {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--black);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--black);
+    }
+
+    .form-textarea {
+      min-height: 95px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .quick-samples {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quick-sample-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .sample-pill {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sample-pill:hover {
+      background: #e2e8f0;
+      color: var(--black);
+    }
+
+    .btn-main {
+      background: var(--black);
+      color: #ffffff;
+      border: 1px solid var(--black);
+      padding: 11px 18px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      transition: background 0.15s ease;
+    }
+
+    .btn-main:hover {
+      background: var(--black-hover);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--black);
+      border: 1px solid var(--border-dark);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: var(--black);
+    }
+
+    .open-window-notice {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #1e40af;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Result Card Styles */
+    .empty-result {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .empty-result svg {
+      margin-bottom: 12px;
+      color: #94a3b8;
+    }
+
+    .result-banner {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .banner-verified {
+      background: var(--status-verified-bg);
+      border-color: var(--status-verified-border);
+      color: var(--status-verified-text);
+    }
+
+    .banner-suspicious {
+      background: var(--status-suspicious-bg);
+      border-color: var(--status-suspicious-border);
+      color: var(--status-suspicious-text);
+    }
+
+    .banner-unverified {
+      background: var(--status-unverified-bg);
+      border-color: var(--status-unverified-border);
+      color: var(--status-unverified-text);
+    }
+
+    .result-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-verified { background: #dcfce7; color: #166534; }
+    .badge-suspicious { background: #fee2e2; color: #991b1b; }
+    .badge-unverified { background: #fef3c7; color: #92400e; }
+
+    .layer-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: #ffffff;
+    }
+
+    .layer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+
+    .layer-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .layer-body {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .keyword-tag {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      font-size: 11.5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    .confidence-panel {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 14px;
+      line-height: 1.45;
+    }
+
+    /* Community Table */
+    .table-toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .table-container {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-main);
+      vertical-align: top;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: #fafafa;
+    }
+
+    .disclaimer-box {
+      background: #fefce8;
+      border: 1px solid #fef08a;
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #854d0e;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* How it works */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .info-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .info-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--black);
+    }
+
+    .info-box p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .info-box ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .info-box li {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .info-box li::before {
+      content: "•";
+      position: absolute;
+      left: 6px;
+      color: var(--black);
+      font-weight: bold;
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--border);
+      background: #ffffff;
+      padding: 20px 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" onclick="switchNav('verify')">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <span class="brand-title">TrustCheck</span>
+      </a>
+
+      <div class="nav-links">
+        <button class="nav-btn active" id="nav-btn-verify" onclick="switchNav('verify')">Verify Offer</button>
+        <button class="nav-btn" id="nav-btn-community" onclick="switchNav('community')">Community Reports</button>
+        <button class="nav-btn" id="nav-btn-report" onclick="switchNav('report')">Report a Scam</button>
+        <button class="nav-btn" id="nav-btn-about" onclick="switchNav('about')">How It Works</button>
+      </div>
+
+      <div class="nav-right-status">
+        <span class="status-dot"></span>
+        <span id="nav-stats-label">Verification Engine Active</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-wrap">
+
+    <!-- VIEW 1: VERIFY -->
+    <section class="view-section active" id="view-verify">
+      <div class="hero">
+        <h1>Verify Before You Trust</h1>
+        <p>Check company legitimacy, detect advance-fee scams, and inspect application links for phishing before you accept an offer.</p>
+      </div>
+
+      <div class="verify-grid">
+        <!-- Input Form -->
+        <div class="card">
+          <h2 class="card-title">Verification Request</h2>
+          <p class="card-desc">Enter company or certificate details. When you click verify, a dedicated Inspection Window opens.</p>
+
+          <form id="verify-form" onsubmit="handleVerification(event)">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="v-category" class="form-select">
+                <option value="Internship">Internship Offer</option>
+                <option value="Company">Company / Enterprise</option>
+                <option value="Certificate">Certificate / Issuer</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Target Name *</label>
+              <input type="text" id="v-name" class="form-input" placeholder="e.g. Google, Tata Consultancy Services, or unverified firm" required />
+            </div>
+
+            <!-- Phishing Link Input -->
+            <div class="form-group">
+              <label class="form-label">
+                Offer / Application Link (URL) <span>(Optional — checks for phishing & domain spoofing)</span>
+              </label>
+              <input type="url" id="v-url" class="form-input" placeholder="e.g. https://careers.google.com or https://tcs-apply.xyz or Google Form link" />
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">
+                Inspects if the link uses an untrusted TLD (.xyz, .top), a generic Google form, or spoofs a legitimate corporate domain.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Offer Communication Text <span>(Optional)</span>
+              </label>
+              <textarea id="v-text" class="form-textarea" placeholder="Paste the offer letter text, email body, WhatsApp message, or requirements here to check for scam phrases..."></textarea>
+            </div>
+
+            <div class="quick-samples">
+              <span class="quick-sample-label">Try sample:</span>
+              <button type="button" class="sample-pill" onclick="loadSample('Google', 'Company', '', 'https://careers.google.com')">Google Official</button>
+              <button type="button" class="sample-pill" onclick="loadSample('Tata Consultancy Services', 'Company', 'Please pay registration fee of 1500 for training.', 'https://tcs-careers-apply.xyz')">TCS Phishing Scam</button>
+              <button type="button" class="sample-pill" onclick="loadSample('Coursera', 'Certificate', '', 'https://coursera.org/verify')">Coursera</button>
+              <button type="button" class="sample-pill" onclick="loadSample('Apex Virtual Academy', 'Internship', 'Guaranteed placement without interview. Pay 2000 deposit.', 'https://forms.gle/sampleFakeForm')">Google Form Scam</button>
+              <button type="button" class="sample-pill" onclick="loadSample('Quantum Tech Innovations', 'Internship', 'Standard software developer internship.', '')">Unknown Firm</button>
+            </div>
+
+            <button type="submit" class="btn-main" id="btn-verify">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              Run Verification Check (Opens Report Window)
+            </button>
+          </form>
+        </div>
+
+        <!-- Result Display -->
+        <div class="card" id="result-wrapper">
+          <h2 class="card-title">Verification Results</h2>
+          <p class="card-desc">Detailed multi-layer audit report.</p>
+
+          <div class="empty-result" id="res-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <div style="font-weight: 600; color: var(--black); margin-bottom: 4px;">No Search Performed Yet</div>
+            <p style="font-size: 13px;">Enter a company name and link on the left to launch an automated security audit in a separate window.</p>
+          </div>
+
+          <div id="res-content" style="display: none;">
+            <div class="open-window-notice">
+              <span>Report opened in a separate window.</span>
+              <button type="button" class="btn-secondary" style="font-size: 12px; padding: 4px 10px;" onclick="reopenReportWindow()">Reopen Window &rarr;</button>
+            </div>
+
+            <div class="result-banner" id="res-banner">
+              <div>
+                <h3 id="res-entity-title" style="font-size: 17px; font-weight: 700; margin-bottom: 4px;">Entity Name</h3>
+                <p id="res-primary-reason" style="font-size: 13px; line-height: 1.4;">Reason summary</p>
+              </div>
+              <span class="result-badge" id="res-badge">VERIFIED</span>
+            </div>
+
+            <div class="layer-item">
+              <div class="layer-header">
+                <span>Layer 1: Verified Database Match</span>
+                <span class="layer-chip" id="l1-chip">NO MATCH</span>
+              </div>
+              <div class="layer-body" id="l1-text">Details</div>
+            </div>
+
+            <div class="layer-item">
+              <div class="layer-header">
+                <span>Layer 2: Scam Keyword Detection</span>
+                <span class="layer-chip" id="l2-chip">CLEAR</span>
+              </div>
+              <div class="layer-body" id="l2-text">Details</div>
+              <div class="tag-container" id="l2-tags" style="display: none;"></div>
+            </div>
+
+            <div class="layer-item">
+              <div class="layer-header">
+                <span>Layer 3: Link & Phishing Security Audit</span>
+                <span class="layer-chip" id="l-url-chip">SAFE</span>
+              </div>
+              <div class="layer-body" id="l-url-text">Details</div>
+              <div class="tag-container" id="l-url-tags" style="display: none;"></div>
+            </div>
+
+            <div class="layer-item">
+              <div class="layer-header">
+                <span>Layer 4: Community Feedback</span>
+                <span class="layer-chip" id="l3-chip">0 REPORTS</span>
+              </div>
+              <div class="layer-body" id="l3-text">Details</div>
+            </div>
+
+            <div class="confidence-panel" id="res-confidence">
+              Confidence & limitations note.
+            </div>
+
+            <div style="margin-top: 16px; display: flex; gap: 8px;">
+              <button type="button" class="btn-main" style="width: auto; flex: 1;" onclick="reopenReportWindow()">Open in Separate Window</button>
+              <button type="button" class="btn-secondary" onclick="prefillReport()">Report This Entity</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: COMMUNITY REPORTS -->
+    <section class="view-section" id="view-community">
+      <div class="hero" style="text-align: left; margin-bottom: 20px;">
+        <h1 style="font-size: 26px;">Community Scam Reports</h1>
+        <p style="margin: 0;">Student-submitted reports about fraudulent recruiters, advance-fee schemes, and questionable certificates.</p>
+      </div>
+
+      <div class="disclaimer-box">
+        <div><strong>Notice:</strong> User-submitted allegations reflect community experiences and are not independently verified legal facts.</div>
+        <button class="btn-secondary" style="padding: 4px 10px; font-size: 12px;" onclick="switchNav('report')">+ Submit Report</button>
+      </div>
+
+      <div class="table-toolbar">
+        <input type="text" id="comm-search" class="form-input" style="max-width: 380px;" placeholder="Search reports by company, contact, or keywords..." oninput="renderCommunityTable()" />
+        <select id="comm-cat" class="form-select" style="max-width: 180px;" onchange="renderCommunityTable()">
+          <option value="All">All Categories</option>
+          <option value="Internship">Internship Offers</option>
+          <option value="Certificate">Certificates</option>
+          <option value="Company">Fake Companies</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 24%;">Entity / Platform</th>
+              <th style="width: 14%;">Category</th>
+              <th style="width: 22%;">Contact Channel</th>
+              <th style="width: 30%;">Allegation Details</th>
+              <th style="width: 10%;">Date</th>
+            </tr>
+          </thead>
+          <tbody id="community-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW 3: REPORT A SCAM -->
+    <section class="view-section" id="view-report">
+      <div style="max-width: 680px; margin: 0 auto;">
+        <div class="hero" style="text-align: left; margin-bottom: 24px;">
+          <h1 style="font-size: 26px;">Report a Suspicious Entity</h1>
+          <p style="margin: 0;">Help peers avoid recruitment fraud by documenting suspicious behavior, unauthorized fee requests, phishing links, or fake credentials.</p>
+        </div>
+
+        <div class="card">
+          <form id="report-form" onsubmit="handleReportSubmit(event)">
+            <div class="form-group">
+              <label class="form-label">Entity or Company Name *</label>
+              <input type="text" id="r-name" class="form-input" placeholder="e.g. Apex Recruitment, FakeCert Online" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="r-category" class="form-select">
+                <option value="Internship">Internship Offer</option>
+                <option value="Certificate">Certificate / Course</option>
+                <option value="Company">Company / Enterprise</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Recruiter Contact / Source / Phishing Link</label>
+              <input type="text" id="r-contact" class="form-input" placeholder="e.g. WhatsApp: +91 98765..., Telegram: @hr_apex, domain.xyz" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Description of Fraudulent Activity *</label>
+              <textarea id="r-desc" class="form-textarea" placeholder="Explain what happened: Did they demand a security deposit? Did they offer direct placement without an interview? Did they send a fake Google Form?" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Evidence URL <span>(Optional screenshot or drive link)</span></label>
+              <input type="url" id="r-evidence" class="form-input" placeholder="https://..." />
+            </div>
+
+            <button type="submit" class="btn-main" id="btn-submit-report">Submit Report</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: HOW IT WORKS -->
+    <section class="view-section" id="view-about">
+      <div class="hero" style="text-align: left; margin-bottom: 24px;">
+        <h1 style="font-size: 26px;">How TrustCheck Works</h1>
+        <p style="margin: 0;">A transparent explanation of the multi-layer verification system, phishing link detection, and practical student safety rules.</p>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-box">
+          <h3>The Multi-Layer Verification Engine</h3>
+          <p>TrustCheck evaluates queries deterministically across complementary defensive layers:</p>
+          <ul>
+            <li><strong>Layer 1 — Starter Verified Database:</strong> Evaluates target names against authenticated enterprises (Google, Microsoft, TCS, Infosys, Coursera, NPTEL, etc.). Distinguishes exact matches from partial matches.</li>
+            <li><strong>Layer 2 — Scam Keyword Heuristics:</strong> Inspects communication text for advance-fee requests, "guaranteed placement without interview", refundable deposits, and task scams.</li>
+            <li><strong>Layer 3 — Link & Phishing Analysis:</strong> Analyzes application URLs against the company's authenticated domain, checks for suspicious TLDs (.xyz, .top), and flags generic Google Forms or Telegram channels used for hiring.</li>
+            <li><strong>Layer 4 — Community Feedback:</strong> Crowdsourced database where students can search ongoing scam reports and flag new fraudulent contacts.</li>
+          </ul>
+        </div>
+
+        <div class="info-box">
+          <h3>Essential Student Security Rules</h3>
+          <p>Protect your career and finances with these baseline principles:</p>
+          <ul>
+            <li><strong>Never Pay for an Internship:</strong> Legitimate companies pay candidates. Any request for a "registration fee", "laptop security deposit", or "processing charge" is a scam.</li>
+            <li><strong>Inspect Corporate Email & Website Domains:</strong> Verify that recruiter communications originate from <code>@company.com</code>, not free Gmail, Outlook, or suspicious lookalike domains (e.g. <code>tcs-jobs.xyz</code>).</li>
+            <li><strong>Dataset Limitations:</strong> The starter repository covers 18 verified entities. An <code>UNVERIFIED</code> status means the entity is not in the local starter database; students should conduct manual due diligence.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    TrustCheck — Independent Student Protection System. Designed for transparent verification.
+  </footer>
+
+  <script>
+    // In-memory / Fallback Starter Dataset for Standalone & Vercel Deployments
+    const STARTER_ENTITIES = [
+      { id: "ENT-001", name: "Google", category: "Company", domain: "google.com", note: "Official applications via careers.google.com. Google never charges fees.", aliases: ["Alphabet", "Google LLC", "Google Summer of Code", "GSoC"] },
+      { id: "ENT-002", name: "Microsoft", category: "Company", domain: "microsoft.com", note: "Official applications via careers.microsoft.com.", aliases: ["Microsoft Corporation", "Microsoft Learn", "MSFT"] },
+      { id: "ENT-003", name: "Tata Consultancy Services", category: "Company", domain: "tcs.com", note: "Official hiring via TCS NextStep and @tcs.com emails.", aliases: ["TCS", "Tata Consultancy", "TCS iON", "TCS NextStep"] },
+      { id: "ENT-004", name: "Infosys", category: "Company", domain: "infosys.com", note: "Official programs via Infosys Springboard / InStep. Zero charges.", aliases: ["Infosys Limited", "Infosys Springboard", "Infosys InStep"] },
+      { id: "ENT-005", name: "Amazon", category: "Company", domain: "amazon.jobs", note: "Amazon student programs never recruit via Telegram or charge deposits.", aliases: ["Amazon Web Services", "AWS"] },
+      { id: "ENT-006", name: "Wipro", category: "Company", domain: "wipro.com", note: "Official communication originates strictly from @wipro.com.", aliases: ["Wipro Limited", "Wipro Elite"] },
+      { id: "ENT-007", name: "IBM", category: "Company", domain: "ibm.com", note: "Verified enterprise. Badges issued through IBM SkillsBuild.", aliases: ["International Business Machines", "IBM SkillsBuild"] },
+      { id: "ENT-008", name: "Accenture", category: "Company", domain: "accenture.com", note: "Official onboarding requires direct portal access at accenture.com.", aliases: ["Accenture PLC"] },
+      { id: "ENT-009", name: "Cognizant", category: "Company", domain: "cognizant.com", note: "Verified via Cognizant Careers candidate portal.", aliases: ["Cognizant Technology Solutions", "CTS"] },
+      { id: "ENT-010", name: "Cisco Systems", category: "Company", domain: "cisco.com", note: "Certifications verifiable through Cisco Networking Academy.", aliases: ["Cisco", "NetAcad"] },
+      { id: "ENT-011", name: "Coursera", category: "Certificate", domain: "coursera.org", note: "Cryptographic verification URLs hosted at coursera.org/verify.", aliases: ["Coursera Inc"] },
+      { id: "ENT-012", name: "edX", category: "Certificate", domain: "edx.org", note: "Certificates hosted directly under edx.org.", aliases: ["edX LLC", "HarvardX", "MITx"] },
+      { id: "ENT-013", name: "NPTEL", category: "Certificate", domain: "nptel.ac.in", note: "Government academic body. Verifiable via nptel.ac.in/noc.", aliases: ["SWAYAM NPTEL", "IIT NPTEL"] },
+      { id: "ENT-014", name: "ISRO", category: "Internship", domain: "isro.gov.in", note: "Government agency. Internships arranged through formal university MOUs.", aliases: ["Indian Space Research Organisation"] },
+      { id: "ENT-015", name: "Oracle Academy", category: "Certificate", domain: "oracle.com", note: "Verified through Oracle CertView portal.", aliases: ["Oracle", "CertView"] },
+      { id: "ENT-016", name: "Linux Foundation", category: "Certificate", domain: "linuxfoundation.org", note: "Official open source credential issuer.", aliases: ["CNCF", "LF Training"] },
+      { id: "ENT-017", name: "Google Cloud Certifications", category: "Certificate", domain: "cloud.google.com", note: "Digital badges verifiable via Credly/Accredible.", aliases: ["GCP Certifications"] },
+      { id: "ENT-018", name: "DeepLearning.AI", category: "Certificate", domain: "deeplearning.ai", note: "Verified certification provider partnered with Coursera.", aliases: ["Deep Learning AI"] }
+    ];
+
+    const SCAM_PATTERNS = [
+      { phrase: "pay registration fee", explanation: "Legitimate employers never require registration fees." },
+      { phrase: "registration fee", explanation: "Requesting registration fees is a primary scam indicator." },
+      { phrase: "pay to receive an offer letter", explanation: "Employment offer letters are never sold." },
+      { phrase: "pay for offer letter", explanation: "Demanding payment prior to issuing an appointment letter is fraud." },
+      { phrase: "refundable security deposit", explanation: "Scammers promise refundable laptop or training deposits that are never returned." },
+      { phrase: "security deposit", explanation: "Demanding a security deposit for intern onboarding is prohibited." },
+      { phrase: "processing fee", explanation: "Administrative processing charges are classic advance-fee scams." },
+      { phrase: "pay for certificate", explanation: "Selling completion certificates without rigorous evaluation lacks authenticity." },
+      { phrase: "crypto payment", explanation: "Cryptocurrency requests are untraceable and indicative of fraud." },
+      { phrase: "guaranteed placement", explanation: "No credible organization guarantees placement without assessment." },
+      { phrase: "100% placement guarantee", explanation: "Deceptive marketing tactic used by predatory placement agencies." },
+      { phrase: "guaranteed job without an interview", explanation: "Legitimate technical companies always interview candidates." },
+      { phrase: "direct selection without interview", explanation: "Direct selection without interviews rushes candidates into paying fees." },
+      { phrase: "no interview required", explanation: "Lack of interview process indicates mass recruitment fraud." },
+      { phrase: "telegram task", explanation: "Telegram task scams pay small amounts for rating products before stealing funds." },
+      { phrase: "daily rating task", explanation: "Assigning YouTube likes or Google map reviews is typical task fraud." },
+      { phrase: "whatsapp hr", explanation: "Official corporate hiring is not conducted exclusively over personal WhatsApp." },
+      { phrase: "contact on telegram", explanation: "Enterprise recruitment is never conducted solely over Telegram." },
+      { phrase: "training fee deduction", explanation: "Selling training disguised as an employment offer." }
+    ];
+
+    const HIGH_RISK_TLDS = ["xyz", "top", "online", "site", "buzz", "club", "tk", "ml", "ga", "cf", "work", "cc", "fit"];
+
+    let communityReports = [
+      { id: "REP-101", entityName: "Apex Tech Innovations", category: "Internship", contactDetails: "Telegram: @apex_hr / +91 9876543210", description: "Offered remote Python internship without technical interview. Demanded Rs. 1,800 refundable deposit for onboarding kit.", formattedDate: "2026-10-26" },
+      { id: "REP-102", entityName: "EduCert Global Academy", category: "Certificate", contactDetails: "contact@educert-verify.online", description: "Promised instant AI Specialist certificate without exam if paid $49 within 24 hours.", formattedDate: "2026-10-22" },
+      { id: "REP-103", entityName: "FastTrack Placements", category: "Internship", contactDetails: "fasttrackcareers24@gmail.com", description: "Guaranteed 100% placement. Demanded Rs. 3,500 registration fee before releasing appointment letter.", formattedDate: "2026-10-18" },
+      { id: "REP-104", entityName: "FutureEdge Solutions", category: "Internship", contactDetails: "HR Sneha on WhatsApp (+91 8765432109)", description: "Asked student to like YouTube videos as daily internship tasks, then demanded VIP recharge fee.", formattedDate: "2026-10-14" }
+    ];
+
+    // Load persisted local storage reports if available
+    try {
+      const stored = localStorage.getItem("trustcheck_reports");
+      if (stored) {
+        communityReports = JSON.parse(stored);
+      }
+    } catch (e) {}
+
+    let lastResult = null;
+
+    // Navigation Switcher
+    function switchNav(navId) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+
+      const btn = document.getElementById(`nav-btn-${navId}`);
+      const sec = document.getElementById(`view-${navId}`);
+      if (btn) btn.classList.add('active');
+      if (sec) sec.classList.add('active');
+
+      if (navId === 'community') {
+        renderCommunityTable();
+      }
+    }
+
+    // Quick Sample Loader
+    function loadSample(name, category, text, url) {
+      document.getElementById('v-name').value = name;
+      document.getElementById('v-category').value = category;
+      document.getElementById('v-text').value = text;
+      document.getElementById('v-url').value = url || '';
+      handleVerification();
+    }
+
+    // URL & Phishing Link Analyzer (Client Side)
+    function analyzeUrlClient(urlStr, matchedEntity) {
+      if (!urlStr || !urlStr.trim()) {
+        return { triggered: false, url: '', domain: '', riskLevel: 'SAFE', reasons: [], note: 'No URL submitted for phishing inspection.' };
+      }
+
+      let rawUrl = urlStr.trim();
+      if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+        rawUrl = 'https://' + rawUrl;
+      }
+
+      let domain = '';
+      try {
+        const u = new URL(rawUrl);
+        domain = u.hostname.toLowerCase().replace(/^www\./, '');
+      } catch (err) {
+        return { triggered: true, url: rawUrl, domain: '', riskLevel: 'MEDIUM', reasons: ['Malformed URL structure.'], note: 'Malformed URL format.' };
+      }
+
+      const reasons = [];
+      let isHigh = false;
+
+      // Check HTTP
+      if (rawUrl.startsWith('http://')) {
+        reasons.push('Insecure HTTP connection: link is unencrypted.');
+      }
+
+      // Check Google Forms
+      if (domain.includes('forms.gle') || (domain.includes('docs.google.com') && rawUrl.includes('forms'))) {
+        reasons.push('Free Google Form: Legitimate corporate employers recruit via official applicant tracking portals, not free Google forms.');
+      }
+
+      // Check Telegram & WhatsApp
+      if (domain.includes('t.me') || domain.includes('telegram.me')) {
+        reasons.push('Telegram Channel Redirect: Official recruitment is not routed via anonymous Telegram channels.');
+        isHigh = true;
+      }
+      if (domain.includes('wa.me') || domain.includes('api.whatsapp.com')) {
+        reasons.push('Direct WhatsApp Link: Recruitment directed to personal messaging.');
+      }
+
+      // Check TLD
+      const parts = domain.split('.');
+      const tld = parts[parts.length - 1];
+      if (HIGH_RISK_TLDS.includes(tld)) {
+        reasons.push(`High-Risk Domain Extension: Uses .${tld}, an extension heavily correlated with recruitment scams.`);
+      }
+
+      // Check Domain Spoofing against Layer 1 matched entity
+      if (matchedEntity && matchedEntity.domain) {
+        const official = matchedEntity.domain.toLowerCase().replace(/^www\./, '');
+        if (domain !== official && !domain.endsWith('.' + official)) {
+          reasons.push(`Domain Spoofing / Brand Impersonation: Target is '${matchedEntity.name}', whose official registered domain is '${official}'. The provided link directs to '${domain}'.`);
+          isHigh = true;
+        }
+      }
+
+      const triggered = reasons.length > 0;
+      return {
+        triggered,
+        url: rawUrl,
+        domain,
+        riskLevel: isHigh ? 'HIGH' : (triggered ? 'MEDIUM' : 'SAFE'),
+        reasons,
+        note: triggered ? `Flagged ${reasons.length} phishing or domain warning(s) on '${domain}'.` : `Link domain '${domain}' passed initial checks.`
+      };
+    }
+
+    // Core Verification Engine
+    function handleVerification(e) {
+      if (e) e.preventDefault();
+      const entityName = document.getElementById('v-name').value.trim();
+      const category = document.getElementById('v-category').value;
+      const offerText = document.getElementById('v-text').value.trim();
+      const offerUrl = document.getElementById('v-url').value.trim();
+
+      if (!entityName) return;
+
+      const btn = document.getElementById('btn-verify');
+      btn.textContent = "Analyzing & Opening Window...";
+
+      // Attempt Java backend first; if not reachable (e.g. Vercel), fall back to client engine
+      fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entityName, category, offerText, offerUrl })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Backend not available");
+        return res.json();
+      })
+      .then(data => {
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg> Run Verification Check (Opens Report Window)`;
+        renderVerificationResult(data);
+        openReportWindow(data);
+      })
+      .catch(() => {
+        // Run Client-Side Engine
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg> Run Verification Check (Opens Report Window)`;
+        const clientResult = runLocalVerification(entityName, category, offerText, offerUrl);
+        renderVerificationResult(clientResult);
+        openReportWindow(clientResult);
+      });
+    }
+
+    function runLocalVerification(entityName, category, offerText, offerUrl) {
+      const cleanName = entityName.toLowerCase();
+      const combinedText = (entityName + " " + (offerText || "") + " " + (offerUrl || "")).toLowerCase();
+
+      // Layer 1 Match
+      let l1Match = null;
+      let l1Type = "NONE";
+      for (const e of STARTER_ENTITIES) {
+        if (e.name.toLowerCase() === cleanName || (e.aliases && e.aliases.some(a => a.toLowerCase() === cleanName))) {
+          l1Match = e;
+          l1Type = "EXACT";
+          break;
+        }
+      }
+      if (!l1Match) {
+        for (const e of STARTER_ENTITIES) {
+          if (cleanName.length >= 3 && (e.name.toLowerCase().includes(cleanName) || cleanName.includes(e.name.toLowerCase()))) {
+            l1Match = e;
+            l1Type = "PARTIAL";
+            break;
+          }
+        }
+      }
+
+      // Layer 2 Keyword Heuristics
+      const flaggedKeywords = [];
+      const explanations = [];
+      for (const p of SCAM_PATTERNS) {
+        const regex = new RegExp(`\\b${p.phrase.replace(/\\s+/g, '\\s+')}\\b`, 'i');
+        if (regex.test(combinedText)) {
+          flaggedKeywords.push(p.phrase);
+          explanations.push(p.explanation);
+        }
+      }
+
+      // Phishing & Link Check
+      const phishingRes = analyzeUrlClient(offerUrl, l1Match);
+
+      // Layer 3 Community Reports
+      const matchedReports = communityReports.filter(r => 
+        r.entityName.toLowerCase().includes(cleanName) || cleanName.includes(r.entityName.toLowerCase())
+      );
+
+      // Synthesis Logic
+      let status = "UNVERIFIED";
+      let primaryReason = "";
+
+      if (phishingRes.riskLevel === 'HIGH') {
+        status = "SUSPICIOUS";
+        primaryReason = `Phishing & Domain Alert: ${phishingRes.reasons[0]}`;
+      } else if (flaggedKeywords.length > 0 || matchedReports.length >= 2) {
+        status = "SUSPICIOUS";
+        if (l1Match && flaggedKeywords.length > 0) {
+          primaryReason = `Imposter Scam Warning: Matched brand '${l1Match.name}', but communication contains scam phrases (${flaggedKeywords.join(', ')}). Legitimate companies never charge fees.`;
+        } else if (flaggedKeywords.length > 0) {
+          primaryReason = `High-risk scam keywords detected: ${flaggedKeywords.join(', ')}.`;
+        } else {
+          primaryReason = `Multiple community allegations (${matchedReports.length} reports) recorded against this entity.`;
+        }
+      } else if (l1Type === "EXACT" && matchedReports.length === 0) {
+        status = "VERIFIED";
+        primaryReason = `Confirmed match in starter verified database (${l1Match.name}). Official domain: ${l1Match.domain}. Zero scam markers detected.`;
+      } else if (l1Type === "PARTIAL" && matchedReports.length === 0) {
+        status = "UNVERIFIED";
+        primaryReason = `Partial name match with '${l1Match.name}', but exact identity could not be verified. Exercise caution.`;
+      } else {
+        status = "UNVERIFIED";
+        primaryReason = `Entity '${entityName}' was not found in the starter verified database. No scam keywords were detected.`;
+      }
+
+      return {
+        entityName,
+        category,
+        status,
+        primaryReason,
+        layer1Match: !!l1Match,
+        layer1MatchType: l1Type,
+        layer1Note: l1Match ? `${l1Type === 'EXACT' ? 'Exact match' : 'Partial match'} found: ${l1Match.name}. Domain: ${l1Match.domain}. ${l1Match.note}` : `Not found in starter verified database of ${STARTER_ENTITIES.length} entities.`,
+        layer2Triggered: flaggedKeywords.length > 0,
+        layer2Keywords: flaggedKeywords,
+        layer2Note: flaggedKeywords.length > 0 ? `Flagged ${flaggedKeywords.length} warning keyword(s).` : "No known scam warning phrases detected.",
+        urlAnalyzed: phishingRes.url,
+        urlPhishingTriggered: phishingRes.triggered,
+        urlRiskLevel: phishingRes.riskLevel,
+        urlReasons: phishingRes.reasons,
+        urlNote: phishingRes.note,
+        layer3ReportCount: matchedReports.length,
+        layer3Note: matchedReports.length > 0 ? `Found ${matchedReports.length} student allegation(s) matching this entity.` : "0 community scam reports on record for this entity.",
+        confidenceBreakdown: `Deterministic check against ${STARTER_ENTITIES.length} verified entities, ${SCAM_PATTERNS.length} scam patterns, and ${communityReports.length} community records.`
+      };
+    }
+
+    function renderVerificationResult(res) {
+      lastResult = res;
+      document.getElementById('res-empty').style.display = 'none';
+      document.getElementById('res-content').style.display = 'block';
+
+      document.getElementById('res-entity-title').textContent = `${res.entityName} (${res.category})`;
+      document.getElementById('res-primary-reason').textContent = res.primaryReason;
+
+      const banner = document.getElementById('res-banner');
+      const badge = document.getElementById('res-badge');
+      badge.textContent = res.status;
+
+      banner.className = 'result-banner';
+      badge.className = 'result-badge';
+
+      if (res.status === 'VERIFIED') {
+        banner.classList.add('banner-verified');
+        badge.classList.add('badge-verified');
+      } else if (res.status === 'SUSPICIOUS') {
+        banner.classList.add('banner-suspicious');
+        badge.classList.add('badge-suspicious');
+      } else {
+        banner.classList.add('banner-unverified');
+        badge.classList.add('badge-unverified');
+      }
+
+      // Layer 1
+      const l1Chip = document.getElementById('l1-chip');
+      l1Chip.textContent = res.layer1Match ? res.layer1MatchType : 'NO MATCH';
+      l1Chip.className = `layer-chip ${res.layer1Match ? 'badge-verified' : 'badge-unverified'}`;
+      document.getElementById('l1-text').textContent = res.layer1Note;
+
+      // Layer 2
+      const l2Chip = document.getElementById('l2-chip');
+      const l2Tags = document.getElementById('l2-tags');
+      if (res.layer2Triggered) {
+        l2Chip.textContent = 'KEYWORDS DETECTED';
+        l2Chip.className = 'layer-chip badge-suspicious';
+        l2Tags.style.display = 'flex';
+        l2Tags.innerHTML = (res.layer2Keywords || []).map(k => `<span class="keyword-tag">${escapeHtml(k)}</span>`).join('');
+      } else {
+        l2Chip.textContent = 'CLEAR';
+        l2Chip.className = 'layer-chip badge-verified';
+        l2Tags.style.display = 'none';
+      }
+      document.getElementById('l2-text').textContent = res.layer2Note;
+
+      // URL Phishing Layer
+      const urlChip = document.getElementById('l-url-chip');
+      const urlTags = document.getElementById('l-url-tags');
+      if (res.urlPhishingTriggered) {
+        urlChip.textContent = res.urlRiskLevel === 'HIGH' ? 'PHISHING RISK (HIGH)' : 'WARNINGS FLAGGED';
+        urlChip.className = `layer-chip ${res.urlRiskLevel === 'HIGH' ? 'badge-suspicious' : 'badge-unverified'}`;
+        urlTags.style.display = 'flex';
+        urlTags.innerHTML = (res.urlReasons || []).map(r => `<span class="keyword-tag" style="background: #fef2f2; color: #991b1b;">${escapeHtml(r)}</span>`).join('');
+      } else {
+        urlChip.textContent = res.urlAnalyzed ? 'URL VERIFIED SAFE' : 'NO URL PROVIDED';
+        urlChip.className = `layer-chip ${res.urlAnalyzed ? 'badge-verified' : 'badge-unverified'}`;
+        urlTags.style.display = 'none';
+      }
+      document.getElementById('l-url-text').textContent = res.urlNote || 'No URL inspected.';
+
+      // Layer 3 Community
+      const l3Chip = document.getElementById('l3-chip');
+      l3Chip.textContent = `${res.layer3ReportCount} REPORT(S)`;
+      l3Chip.className = `layer-chip ${res.layer3ReportCount > 0 ? 'badge-suspicious' : 'badge-verified'}`;
+      document.getElementById('l3-text').textContent = res.layer3Note;
+
+      document.getElementById('res-confidence').innerHTML = `<strong>Rule Evaluation:</strong> ${res.confidenceBreakdown}<br><span style="color: var(--text-muted);">Starter dataset does not cover every firm globally. Lack of keywords does not conclusively prove legitimacy.</span>`;
+    }
+
+    // ========================================================
+    // SEPARATE WINDOW GENERATOR (TrustCheck Audit Certificate)
+    // ========================================================
+    function openReportWindow(res) {
+      const w = 880;
+      const h = 820;
+      const left = (screen.width - w) / 2;
+      const top = (screen.height - h) / 2;
+
+      const popup = window.open('', 'TrustCheckAuditReport', `width=${w},height=${h},top=${top},left=${left},resizable=yes,scrollbars=yes`);
+      if (!popup) {
+        alert("Report generated! Your browser blocked the pop-up window. Please allow popups or click 'Open in Separate Window'.");
+        return;
+      }
+
+      popup.document.open();
+      popup.document.write(buildPopupReportHtml(res));
+      popup.document.close();
+      popup.focus();
+    }
+
+    function reopenReportWindow() {
+      if (lastResult) {
+        openReportWindow(lastResult);
+      }
+    }
+
+    function buildPopupReportHtml(res) {
+      const isVerified = res.status === 'VERIFIED';
+      const isSuspicious = res.status === 'SUSPICIOUS';
+      const statusColor = isVerified ? '#166534' : (isSuspicious ? '#991b1b' : '#92400e');
+      const statusBg = isVerified ? '#f0fdf4' : (isSuspicious ? '#fef2f2' : '#fffbeb');
+      const statusBorder = isVerified ? '#bbf7d0' : (isSuspicious ? '#fecaca' : '#fde68a');
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TrustCheck Security Audit — ${escapeHtml(res.entityName)}</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 32px;
+      line-height: 1.5;
+    }
+    .report-sheet {
+      max-width: 780px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      padding: 36px;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .meta-tag {
+      font-size: 12px;
+      color: #64748b;
+      font-family: monospace;
+      text-align: right;
+    }
+    .status-box {
+      background: ${statusBg};
+      border: 1px solid ${statusBorder};
+      color: ${statusColor};
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-badge {
+      font-size: 15px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: ${statusColor};
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .check-block {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: #ffffff;
+    }
+    .check-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .tag {
+      display: inline-block;
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: monospace;
+      margin: 3px 3px 3px 0;
+    }
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 20px;
+    }
+    .btn {
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-dark { background: #0f172a; color: #ffffff; }
+    .btn-light { background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; }
+    @media print {
+      body { background: #ffffff; padding: 0; }
+      .report-sheet { border: none; box-shadow: none; }
+      .btn-row { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-sheet">
+    <div class="header-bar">
+      <div>
+        <div class="brand-title">TrustCheck Security Audit Certificate</div>
+        <div style="font-size: 13px; color: #64748b; margin-top: 2px;">Independent Internship & Certificate Verification Engine</div>
+      </div>
+      <div class="meta-tag">
+        REF: TC-${Date.now().toString().slice(-6)}<br>
+        Date: ${new Date().toLocaleString()}
+      </div>
+    </div>
+
+    <div class="status-box">
+      <div>
+        <div style="font-size: 18px; font-weight: 800; color: #0f172a;">${escapeHtml(res.entityName)}</div>
+        <div style="font-size: 13px; color: #475569; margin-top: 4px;">Category: <strong>${escapeHtml(res.category)}</strong></div>
+        <div style="font-size: 13.5px; margin-top: 8px; font-weight: 500;">${escapeHtml(res.primaryReason)}</div>
+      </div>
+      <div class="status-badge">${escapeHtml(res.status)}</div>
+    </div>
+
+    <!-- Check 1: Database -->
+    <div class="check-block">
+      <div class="check-title">
+        <span>Layer 1 — Starter Verified Database</span>
+        <span style="font-weight: 600; color: ${res.layer1Match ? '#166534' : '#64748b'};">${res.layer1Match ? res.layer1MatchType : 'NOT IN STARTER DB'}</span>
+      </div>
+      <div style="font-size: 13px; color: #475569;">${escapeHtml(res.layer1Note)}</div>
+    </div>
+
+    <!-- Check 2: Scam Keywords -->
+    <div class="check-block">
+      <div class="check-title">
+        <span>Layer 2 — Scam Keyword & Heuristic Detection</span>
+        <span style="font-weight: 600; color: ${res.layer2Triggered ? '#991b1b' : '#166534'};">${res.layer2Triggered ? 'SIGNALS DETECTED' : 'CLEAR'}</span>
+      </div>
+      <div style="font-size: 13px; color: #475569;">${escapeHtml(res.layer2Note)}</div>
+      ${res.layer2Keywords && res.layer2Keywords.length > 0 ? `<div style="margin-top: 8px;">${res.layer2Keywords.map(k => `<span class="tag">${escapeHtml(k)}</span>`).join('')}</div>` : ''}
+    </div>
+
+    <!-- Check 3: Link & Phishing -->
+    <div class="check-block">
+      <div class="check-title">
+        <span>Layer 3 — Link & Phishing Security Audit</span>
+        <span style="font-weight: 600; color: ${res.urlPhishingTriggered ? (res.urlRiskLevel === 'HIGH' ? '#991b1b' : '#92400e') : '#166534'};">${res.urlPhishingTriggered ? 'RISK DETECTED' : (res.urlAnalyzed ? 'PASSED' : 'NO URL PROVIDED')}</span>
+      </div>
+      <div style="font-size: 13px; color: #475569;">${escapeHtml(res.urlNote || 'No URL submitted for analysis.')}</div>
+      ${res.urlReasons && res.urlReasons.length > 0 ? `<div style="margin-top: 8px;">${res.urlReasons.map(r => `<div style="font-size: 12.5px; color: #991b1b; margin-top: 4px;">• ${escapeHtml(r)}</div>`).join('')}</div>` : ''}
+    </div>
+
+    <!-- Check 4: Community -->
+    <div class="check-block">
+      <div class="check-title">
+        <span>Layer 4 — Student Community Reports</span>
+        <span style="font-weight: 600; color: ${res.layer3ReportCount > 0 ? '#991b1b' : '#166534'};">${res.layer3ReportCount} REPORT(S)</span>
+      </div>
+      <div style="font-size: 13px; color: #475569;">${escapeHtml(res.layer3Note)}</div>
+    </div>
+
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 12px; color: #64748b; margin-top: 16px;">
+      <strong>Audit Notice:</strong> ${escapeHtml(res.confidenceBreakdown)} Starter dataset covers 18 curated entities. Always verify hiring communications directly via official registered domains.
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-dark" onclick="window.print()">Print / Save PDF Report</button>
+      <button class="btn btn-light" onclick="window.close()">Close Window</button>
+    </div>
+  </div>
+</body>
+</html>`;
+    }
+
+    function prefillReport() {
+      if (!lastResult) return;
+      switchNav('report');
+      document.getElementById('r-name').value = lastResult.entityName;
+      document.getElementById('r-category').value = lastResult.category;
+      if (lastResult.urlAnalyzed) {
+        document.getElementById('r-contact').value = lastResult.urlAnalyzed;
+      }
+      if (lastResult.layer2Keywords && lastResult.layer2Keywords.length > 0) {
+        document.getElementById('r-desc').value = `Scam keywords flagged during verification: ${lastResult.layer2Keywords.join(', ')}. `;
+      }
+    }
+
+    // Community Reports Table
+    function renderCommunityTable() {
+      const q = (document.getElementById('comm-search').value || "").toLowerCase().trim();
+      const cat = document.getElementById('comm-cat').value;
+      const tbody = document.getElementById('community-tbody');
+      tbody.innerHTML = '';
+
+      const filtered = communityReports.filter(r => {
+        const matchesQ = !q || r.entityName.toLowerCase().includes(q) || r.description.toLowerCase().includes(q) || (r.contactDetails && r.contactDetails.toLowerCase().includes(q));
+        const matchesCat = (cat === 'All') || (r.category && r.category.toLowerCase() === cat.toLowerCase());
+        return matchesQ && matchesCat;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 32px; color: var(--text-muted);">No reports matching the current filter.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(r.entityName)}</strong><div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(r.id || 'REP')}</div></td>
+          <td><span style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${escapeHtml(r.category)}</span></td>
+          <td style="font-family: monospace; font-size: 12px; color: var(--text-secondary);">${escapeHtml(r.contactDetails || 'Not specified')}</td>
+          <td style="font-size: 13px;">${escapeHtml(r.description)} ${r.evidenceUrl ? `<br><a href="${escapeHtml(r.evidenceUrl)}" target="_blank" style="color: var(--black); font-size: 11px;">View Link &rarr;</a>` : ''}</td>
+          <td style="font-size: 12px; color: var(--text-muted);">${escapeHtml(r.formattedDate || 'Recent')}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Report Submission Handler
+    function handleReportSubmit(e) {
+      e.preventDefault();
+      const entityName = document.getElementById('r-name').value.trim();
+      const category = document.getElementById('r-category').value;
+      const contactDetails = document.getElementById('r-contact').value.trim();
+      const description = document.getElementById('r-desc').value.trim();
+      const evidenceUrl = document.getElementById('r-evidence').value.trim();
+
+      const newReport = {
+        id: `REP-${communityReports.length + 101}`,
+        entityName,
+        category,
+        contactDetails,
+        description,
+        evidenceUrl,
+        formattedDate: new Date().toISOString().split('T')[0]
+      };
+
+      communityReports.unshift(newReport);
+      try {
+        localStorage.setItem("trustcheck_reports", JSON.stringify(communityReports));
+      } catch (err) {}
+
+      fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReport)
+      }).catch(() => {});
+
+      alert("Thank you! Your report has been saved to the community records.");
+      document.getElementById('report-form').reset();
+      switchNav('community');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // Initial check for server stats
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(s => {
+        if (s) {
+          document.getElementById('nav-stats-label').textContent = `DB: ${s.verifiedEntitiesCount} verified | ${s.scamKeywordsCount} rules | Java Backend`;
+        }
+      })
+      .catch(() => {
+        document.getElementById('nav-stats-label').textContent = `Standalone Engine: ${STARTER_ENTITIES.length} verified | ${SCAM_PATTERNS.length} rules`;
+      });
+  </script>
+</body>
+</html>
